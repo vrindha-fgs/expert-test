@@ -18,33 +18,34 @@ interface ConfirmationEmailRequest {
 
 const generatePersonalizedContent = async (name: string, industry: string) => {
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: "gpt-4o-mini",
         messages: [
           {
-            role: 'system',
-            content: 'You are an expert at writing exciting, personalized welcome emails for an innovation community. Create super short, energetic content that gets people excited about revolutionizing their industry. Keep it under 150 words total.'
+            role: "system",
+            content:
+              "You are an expert at writing exciting, personalized welcome emails for an innovation community. Create super short, energetic content that gets people excited about revolutionizing their industry. Keep it under 150 words total.",
           },
           {
-            role: 'user',
-            content: `Create a personalized welcome email for ${name} who works in the ${industry} industry. Focus on how this innovation community will help them revolutionize their specific industry. Be enthusiastic and inspiring. Include industry-specific opportunities and innovations they could be part of.`
-          }
+            role: "user",
+            content: `Create a personalized welcome email for ${name} who works in the ${industry} industry. Focus on how this innovation community will help them revolutionize their specific industry. Be enthusiastic and inspiring. Include industry-specific opportunities and innovations they could be part of.`,
+          },
         ],
         temperature: 0.8,
-        max_tokens: 200
+        max_tokens: 200,
       }),
     });
 
     const data = await response.json();
-    return data?.choices[1]?.message?.content;
+    return data?.choices[0]?.message?.content;
   } catch (error) {
-    console.error('Error generating personalized content:', error);
+    console.error("Error generating personalized content:", error);
     // Fallback content
     return `Hi ${name}! 🚀 Welcome to our innovation community! We're thrilled to have someone from the ${industry} industry join us. Get ready to discover cutting-edge insights, connect with fellow innovators, and unlock new opportunities that will transform how you work. This is just the beginning of your innovation journey!`;
   }
@@ -57,12 +58,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, industry }: ConfirmationEmailRequest = await req.json();
+    const { name, email, industry }: ConfirmationEmailRequest =
+      await req.json();
 
-    console.log(`Generating personalized email for ${name} from ${industry} industry`);
+    console.log(
+      `Generating personalized email for ${name} from ${industry} industry`
+    );
 
     // Generate personalized content using AI
-    const personalizedContent = await generatePersonalizedContent(name, industry);
+    const personalizedContent = await generatePersonalizedContent(
+      name,
+      industry
+    );
 
     console.log(`Generated content: ${personalizedContent}`);
 
@@ -78,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; color: white; margin-bottom: 30px;">
             <div style="font-size: 18px; line-height: 1.6;">
-              ${personalizedContent.replace(/\n/g, '<br>')}
+            ${(personalizedContent ?? '').replace(/\n/g, "<br>")}
             </div>
           </div>
           
@@ -104,22 +111,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Personalized email sent successfully:", emailResponse);
 
-    return new Response(JSON.stringify({ success: true, emailId: emailResponse.data?.id }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
-  } catch (error: any) {
-    console.error("Error in send-confirmation function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ success: true, emailId: emailResponse.data?.id }),
       {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
       }
     );
+  } catch (error: any) {
+    console.error("Error in send-confirmation function:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
