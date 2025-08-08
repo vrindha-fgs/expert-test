@@ -25,11 +25,13 @@ There was also an unintended duplicate execution of the confirmation email funct
 Implemented a Supabase insert operation to store lead data in the "leads" table before initiating the confirmation email.
 Eliminated the redundant call to the email function to avoid sending multiple emails.
 
-#### Impact  
-✅ Lead data is now correctly stored in the database
-✅ Each submission triggers a single confirmation email
-✅ Enhanced reliability of lead records and tracking
-✅ Eliminated duplicate emails, reducing overhead and improving efficiency
+#### Impact
+
+- ✅ Lead data is now correctly stored in the database  
+- ✅ Each submission triggers a single confirmation email  
+- ✅ Enhanced reliability of lead records and tracking  
+- ✅ Eliminated duplicate emails, reducing overhead and improving efficiency  
+
 ---
 
 ### 2.Resolved Incorrect Data Index Usage and Undefined Check in Confirmation Email Logic
@@ -65,10 +67,11 @@ return data?.choices[0]?.message?.content;
 
 #### Impact
 
-✅ Proper formatting of email content with preserved line breaks
-✅ Emails now consistently include personalized content
-✅ Improved reliability and debugging of the send-confirmation function
-✅ Reduced risk of broken or malformed emails being sent to users
+- ✅ Proper formatting of email content with preserved line breaks  
+- ✅ Emails now consistently include personalized content  
+- ✅ Improved reliability and debugging of the `send-confirmation` function  
+- ✅ Reduced risk of broken or malformed emails being sent to users  
+
 ---
 
 # Welcome to your Lovable project
